@@ -72,4 +72,10 @@ A `Command` is encoded as follows: The first 8 bits represent the Instruction (t
 
 ### Binaray Payloads
 
-Binary payloads allow the user to send and receive whatever they want, at the cost of having to deal with the binary payloads themselves. Every RemoteController implementation has to include an api to send and receive pure binary payloads. 
+Binary payloads allow the user to send and receive whatever they want, at the cost of having to deal with the binary payloads themselves. Every RemoteController implementation has to include an api to send and receive pure binary payloads. <br>
+When transmitting, the first 16 bits (2 bytes) have to be the following `Binary Payload Identifier` bits:
+
+```
+0xEEAE
+```
+
