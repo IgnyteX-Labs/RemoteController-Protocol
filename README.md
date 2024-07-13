@@ -51,28 +51,33 @@ Every RemoteController implemenation has to implement the following two data typ
     </tbody>
 </table>
 
-As this table already suggests how exactly a Command is represented in a RemoteController implementation is not specified, it should be the most conveninet and practical representation that the programming language allows. 
+As this table already suggests how exactly a Command is represented in a RemoteController implementation is not specified, it should be the most convenient and practical representation that the programming language allows. 
 
-It is, however, __crucial__ that the command before being transmitted is encoded in the follwing format:
+#### Encoding
+It is, however, __crucial__ that the command before being transmitted is encoded in the follwing format. A payload transmitting commands has to follow the following format: 
 
-When transmitting commands the first 16 bits (2 bytes) have to be the following `Command Identifier` bits:
+n...number of Commands to transmit
 
-```
-0xEEAF
-```
+| 2-byte | 2-byte | n × 5-byte |
+|---|---|---|
+| RemoteController ID | Command ID | Array of Commands |
+| `0x0000` to `0xFFFF` | `0xEEAF` | Array of __`Command` Type__ |
+| The first 2 bytes are the RemoteController ID to be specified by the user. Two RemoteControllers that are meant to comminucate with eachother must to use the same ID. A RemoteController Implementation should ignore all payloads that are not prefixed with its RemoteController ID. | The following 2 bytes have to be the following `Command Identifier` bytes: `0xEEAF`. This makes the receiver know that the payload after these 16 identifier bits, is of Command Type. | The payload following the Command Identifier consists of a binary array of 40-bit (5-byte) Commands. |
 
-This makes the receiver know that the payload after these 16 identifier bits, is of Command Type. The payload following the Command Identifier consists of a binary array of 40-bit (5-byte) Commands.
-
-A `Command` is encoded as follows: The first 8 bits represent the Instruction (thus 256 different instructions are possible), the following 32 bits represent a throttle value of type float, in total a command is of 40 bit or 5 byte size. 
+The __`Command` Type__ (5 byte) is encoded as follows:
 | Instruction | Throttle |
 |---|---|
 | 8 bits | 32 bits |
 | unsigned int (0-255) | float |
+| The first 8 bits represent the Instruction (thus 256 different instructions are possible) | The following 32 bits represent a throttle value of type float. |
 
 
 ### Binaray Payloads
 
 Binary payloads allow the user to send and receive whatever they want, at the cost of having to deal with the binary payloads themselves. Every RemoteController implementation has to include an api to send and receive pure binary payloads. <br>
+
+#### Encoding
+
 When transmitting, the first 16 bits (2 bytes) have to be the following `Binary Payload Identifier` bits:
 
 ```
